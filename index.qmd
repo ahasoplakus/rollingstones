@@ -1,11 +1,98 @@
 ---
-title: "rollingstones"
+title: "Rolling Stone Album Rankings"
+author: Sukalpo Saha
+date: today
 ---
 
-This is a Quarto website.
-
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library(readr)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(gt)
+```
 
 ```{r}
-1 + 1
+#| message: false
+#| echo: false
+rolling_stone <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-05-07/rolling_stone.csv')
+```
+
+```{r, results='asis'}
+#| echo: false
+df_albums <- rolling_stone |>
+  mutate(
+    Era = case_when(
+      release_year < 1980 ~ "1960-1979",
+      release_year < 2000 ~ "1980-1999",
+      TRUE ~ "2000-Present"
+    ),
+    Genre = if_else(is.na(genre), "Other", genre)
+  ) |>
+  filter(if_any(starts_with("rank"), \(x) x <= 100)) |>
+  select(
+    "Album_Artist" = "clean_name",
+    "Album_Name" = "album",
+    "Album_Release Year" = "release_year",
+    "Genre",
+    contains("rank"),
+    "Rank_Difference" = "differential",
+    "Billboard Stats_Position" = "peak_billboard_position",
+    "Billboard Stats_Weeks" = "weeks_on_billboard",
+    "Spotify_Popularity" = "spotify_popularity",
+    "Era"
+  ) |>
+  arrange(across(ends_with("2020"))) |>
+  rename_with(.cols = contains("rank") & !ends_with("Difference"), .fn = stringr::str_to_title)
+
+df_albums |>
+  gt(groupname_col = "Genre", row_group_as_column = TRUE) |>
+  tab_spanner_delim(
+    columns = contains("Rank") | contains("Billboard") | contains("Album") | contains("Spotify"),
+    delim = "_"
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = is.numeric)
+  ) |>
+  tab_style(
+    style = cell_text(align = "center", weight = "bold"),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_text(align = "center", weight = "bold"),
+    locations = cells_column_spanners()
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_row_groups()
+  ) |>
+  tab_stubhead(md("**Genre**")) |>
+  data_color(
+    columns = contains("Rank") | contains("Billboard") | contains("spotify"),
+    palette = "Redmonder::sPBIBu",
+    method = "numeric"
+  ) |>
+  data_color(
+    columns = "Era",
+    direction = "column",
+    target_columns = 1:4,
+    palette = "wesanderson::Chevalier1"
+  ) |>
+  cols_hide("Era") |>
+  cols_width(
+    is.numeric ~ px(80),
+    everything() ~ px(180)
+  ) |>
+  opt_table_lines() |>
+  opt_css(
+    css = "
+    .gt_table {
+      width: max-content !important;
+    }
+    "
+  )
 ```

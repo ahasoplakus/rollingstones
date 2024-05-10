@@ -1,9 +1,30 @@
 ---
-title: "About"
+title: "Sukalpo Saha"
+toc: false
+about:
+  template: trestles
+  image: ss.jpeg
+  links:
+    - icon: linkedin
+      text: linkedin
+      href: https://www.linkedin.com/in/sukalpo-saha-186329b1
+    - icon: github
+      text: Github
+      href: https://github.com/ahasoplakus
 ---
 
-About this site
+Sukalpo is a Principal Data Scientist at Pfizer. When not crunching data in R, Sukalpo enjoys spending time watching movies, football and playing with his pet Disco.
 
-```{r}
-1 + 1
-```
+## Education
+
+<b>University of Hyderabad, Hyderabad \| Telangana, IN</b><br> M.Sc in Statistics \| July 2015 - June 2017</br>
+
+<b>Asutosh College, Kolkata \| West Bengal, IN</b><br> B.Sc in Statistics \| July 2012 - June 2015</br>
+
+## Experience
+
+<b>Pfizer</b> \| Principal Statistical Data Scientist \| Jan 2023 - present
+
+<b>GSK</b> \| Senior Programmer (R & Shiny) \| Aug 2021 - Dec 2022
+
+<b>Tata Consultancy Services</b> \| Statistical Programmer \| July 2017 - July 2021

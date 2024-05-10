@@ -1,1 +1,5 @@
 /* css styles */
+.cell-output-display:not(.no-overflow-x), .knitsql-table:not(.no-overflow-x) {
+    overflow-x: auto;
+    width: max-content;
+}
