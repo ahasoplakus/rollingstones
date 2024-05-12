@@ -6,7 +6,7 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Album Rankings
+        text: Rankings
       - href: about.qmd
         text: About
 

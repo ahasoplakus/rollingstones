@@ -13,7 +13,7 @@ about:
       href: https://github.com/ahasoplakus
 ---
 
-Sukalpo is a Principal Data Scientist at Pfizer. When not crunching data in R, Sukalpo enjoys spending time watching movies, football and playing with his pet Disco.
+Sukalpo is a Principal Data Scientist at Pfizer. When not crunching data in R, Sukalpo enjoys spending time watching movies, football and playing with his puppy Disco.
 
 ## Education
 

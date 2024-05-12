@@ -8,15 +8,13 @@ date: today
 ```{css}
 #| echo: false
 body {
-  background-color: #FFF2D7 !important;
+  background-color: #fff2d780 !important;
 }
 
 .quarto-title-block .quarto-title-banner {
-  background-size: 300px !important;
-  background-position: left !important;
+  background-size: 20% !important;
   background-repeat: no-repeat !important;
-  background-color: #FFF2D7 !important;
-  height: 100px !important;
+  background-color: #fff2d780 !important;
 }
 
 .quarto-title .title {
@@ -62,8 +60,8 @@ df_albums <- rolling_stone |>
     "Release Year" = "release_year",
     contains("rank"),
     "Change (2003-2020)" = "differential",
-    "Position" = "peak_billboard_position",
-    "Weeks" = "weeks_on_billboard",
+    "Peak Position" = "peak_billboard_position",
+    "Weeks on Billboard" = "weeks_on_billboard",
     "Popularity" = "spotify_popularity",
     "URL" = "album_id",
   ) |>
@@ -77,7 +75,7 @@ df_albums <- rolling_stone |>
 df_albums |>
   gt() |>
   gt_plt_bar(
-    column = "Weeks",
+    column = "Weeks on Billboard",
     color = "#322C2B",
     keep_column = FALSE,
     width = 60,
@@ -130,15 +128,15 @@ df_albums |>
     locations = cells_column_labels()
   ) |>
   tab_style(
-    style = cell_fill(color = "#FFF2D7"),
+    style = cell_fill(color = "#fff2d780"),
     locations = cells_column_spanners()
   ) |>
   tab_style(
-    style = cell_fill(color = "#FFF2D7"),
+    style = cell_fill(color = "#fff2d780"),
     locations = cells_title()
   ) |>
   tab_style(
-    style = cell_fill(color = "#FFF2D7"),
+    style = cell_fill(color = "#fff2d780"),
     locations = cells_source_notes()
   ) |>
   tab_style(
@@ -162,12 +160,12 @@ df_albums |>
     locations = cells_body(columns = 11)
   ) |>
   tab_style(
-    style = cell_fill(color = "#FFF2D7", alpha = 0.5),
-    locations = cells_body(columns = c(8, 10))
+    style = cell_fill(color = "#fff2d780"),
+    locations = cells_body(columns = c(8, 10, 12))
   ) |>
   tab_style(
     style = cell_fill(color = "#000000"),
-    locations = cells_body(columns = 11:12)
+    locations = cells_body(columns = 11)
   ) |>
   tab_style(
     style = cell_borders(sides = "right", weight = px(1), color = "#D3D3D3", style = "solid"),
