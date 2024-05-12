@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 6b611dec-d877-4efe-ba60-cd65d87fa142
+      url: 'https://ahasoplakus.quarto.pub/rollingstones'

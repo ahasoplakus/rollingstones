@@ -1,18 +1,47 @@
 ---
-title: "Rolling Stone Album Rankings"
+title: "Greatest Albums of All Time"
+title-block-banner: rstones.png
 author: Sukalpo Saha
 date: today
 ---
+
+```{css}
+#| echo: false
+body {
+  background-color: #FFF2D7 !important;
+}
+
+.quarto-title-block .quarto-title-banner {
+  background-size: 300px !important;
+  background-position: left !important;
+  background-repeat: no-repeat !important;
+  background-color: #FFF2D7 !important;
+  height: 100px !important;
+}
+
+.quarto-title .title {
+  color: #c61a09;
+  font-weight: 800;
+  font-size: xxx-large;
+}
+
+.quarto-title-meta {
+  color: #c61a09;
+  font-weight: 800;
+  font-size: large;
+}
+```
 
 ```{r}
 #| echo: false
 #| message: false
 #| warning: false
+
 library(readr)
 library(dplyr)
-library(tidyr)
-library(purrr)
+library(stringr)
 library(gt)
+library(gtExtras)
 ```
 
 ```{r}
@@ -24,43 +53,101 @@ rolling_stone <- read_csv('https://raw.githubusercontent.com/rfordatascience/tid
 ```{r, results='asis'}
 #| echo: false
 df_albums <- rolling_stone |>
-  mutate(
-    Era = case_when(
-      release_year < 1980 ~ "1960-1979",
-      release_year < 2000 ~ "1980-1999",
-      TRUE ~ "2000-Present"
-    ),
-    Genre = if_else(is.na(genre), "Other", genre)
-  ) |>
-  filter(if_any(starts_with("rank"), \(x) x <= 100)) |>
+  mutate(Genre = if_else(is.na(genre), "Other", genre)) |>
+  filter(if_any(ends_with("2020"), \(x) x <= 50)) |>
   select(
-    "Album_Artist" = "clean_name",
-    "Album_Name" = "album",
-    "Album_Release Year" = "release_year",
-    "Genre",
+    "Genre" = "Genre",
+    "Artist" = "clean_name",
+    "Name" = "album",
+    "Release Year" = "release_year",
     contains("rank"),
-    "Rank_Difference" = "differential",
-    "Billboard Stats_Position" = "peak_billboard_position",
-    "Billboard Stats_Weeks" = "weeks_on_billboard",
-    "Spotify_Popularity" = "spotify_popularity",
-    "Era"
+    "Change (2003-2020)" = "differential",
+    "Position" = "peak_billboard_position",
+    "Weeks" = "weeks_on_billboard",
+    "Popularity" = "spotify_popularity",
+    "URL" = "album_id",
   ) |>
+  mutate(URL = paste0("https://open.spotify.com/album/", URL)) |>
   arrange(across(ends_with("2020"))) |>
-  rename_with(.cols = contains("rank") & !ends_with("Difference"), .fn = stringr::str_to_title)
+  rename_with(
+    .cols = contains("rank"),
+    .fn = \(x) str_to_title(paste0(str_replace_all(x, "_", "<br>("), ")"))
+  )
 
 df_albums |>
-  gt(groupname_col = "Genre", row_group_as_column = TRUE) |>
-  tab_spanner_delim(
-    columns = contains("Rank") | contains("Billboard") | contains("Album") | contains("Spotify"),
-    delim = "_"
+  gt() |>
+  gt_plt_bar(
+    column = "Weeks",
+    color = "#322C2B",
+    keep_column = FALSE,
+    width = 60,
+    scale_type = "number"
+    ) |>
+  gt_fa_rank_change(
+    column = contains("Change"),
+    font_color = "match",
+    fa_type = "arrow",
+    palette = c("green", "grey", "red")
+  ) |>
+  cols_label_with(
+    columns = 5:7,
+    fn = \(x) md(x)
+  ) |>
+  cols_label_with(
+    columns = "Popularity",
+    fn = \(x) md(paste0(x, "<br>Index"))
+  ) |>
+  tab_spanner(
+    columns = 1:4,
+    label = html(local_image(filename = "music-album.png", height = 50)),
+    id = "album"
+  ) |>
+  tab_spanner(
+    columns = 5:8,
+    label = html(local_image(filename = "rstones.png", height = 50)),
+    id = "rstones"
+  ) |>
+  tab_spanner(
+    columns = 9:10,
+    label = html(local_image(filename = "billboard.png", height = 50)),
+    id = "billboard"
+  ) |>
+  tab_spanner(
+    columns = 11:12,
+    label = html(local_image(filename = "spotify.png", height = 50)),
+    id = "spotify"
   ) |>
   tab_style(
     style = cell_text(align = "center"),
     locations = cells_body(columns = is.numeric)
   ) |>
   tab_style(
-    style = cell_text(align = "center", weight = "bold"),
+    style = cell_text(align = "center", weight = "bold", color = "#EEEEEE", font = "Ubuntu"),
     locations = cells_column_labels()
+  ) |>
+   tab_style(
+    style = cell_fill(color = "#e95420"),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_fill(color = "#FFF2D7"),
+    locations = cells_column_spanners()
+  ) |>
+  tab_style(
+    style = cell_fill(color = "#FFF2D7"),
+    locations = cells_title()
+  ) |>
+  tab_style(
+    style = cell_fill(color = "#FFF2D7"),
+    locations = cells_source_notes()
+  ) |>
+  tab_style(
+    style = cell_text(color = "#c61a09"),
+    locations = cells_title()
+  ) |>
+  tab_style(
+    style = cell_text(color = "#c61a09"),
+    locations = cells_source_notes()
   ) |>
   tab_style(
     style = cell_text(align = "center", weight = "bold"),
@@ -70,28 +157,91 @@ df_albums |>
     style = cell_text(weight = "bold"),
     locations = cells_row_groups()
   ) |>
-  tab_stubhead(md("**Genre**")) |>
-  data_color(
-    columns = contains("Rank") | contains("Billboard") | contains("spotify"),
-    palette = "Redmonder::sPBIBu",
-    method = "numeric"
+  tab_style(
+    style = cell_text(color = "#1DB954", weight = "bold"),
+    locations = cells_body(columns = 11)
+  ) |>
+  tab_style(
+    style = cell_fill(color = "#FFF2D7", alpha = 0.5),
+    locations = cells_body(columns = c(8, 10))
+  ) |>
+  tab_style(
+    style = cell_fill(color = "#000000"),
+    locations = cells_body(columns = 11:12)
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "right", weight = px(1), color = "#D3D3D3", style = "solid"),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_borders(sides = c("top", "bottom"), weight = px(2), color = "#e95420", style = "solid"),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "right", weight = px(1), color = "#e95420", style = "solid"),
+    locations = cells_column_spanners(spanners = c("album", "rstones", "billboard"))
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "bottom", weight = px(2), color = "#e95420", style = "solid"),
+    locations = cells_title()
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "top", style = "hidden"),
+    locations = cells_title()
   ) |>
   data_color(
-    columns = "Era",
+    columns = "Genre",
     direction = "column",
-    target_columns = 1:4,
-    palette = "wesanderson::Chevalier1"
+    target_columns = c(1:4),
+    palette = "wesanderson::Chevalier1",
+    na_color = "white"
   ) |>
-  cols_hide("Era") |>
+  data_color(
+    columns = 5:7,
+    palette = "Redmonder::sPBIRd",
+    direction = "column",
+    method = "numeric",
+    na_color = "white"
+  ) |>
+  data_color(
+    columns = 9,
+    palette = c("#fff2d780", "#322C2B"),
+    method = "numeric",
+    na_color = "white"
+  ) |>
+  sub_missing(
+    columns = contains("Rank"),
+    missing_text = "Outside Top 500"
+  ) |>
+  sub_missing(
+    columns = contains("Popularity"),
+    missing_text = "Not Featured"
+  ) |>
+  fmt_url(columns = 12, as_button = TRUE, color = "#1DB954", button_fill = "#000000") |>
   cols_width(
+    contains("Release") ~ px(80),
     is.numeric ~ px(80),
-    everything() ~ px(180)
+    everything() ~ px(150)
   ) |>
-  opt_table_lines() |>
+  tab_header(
+    title = "Album Rankings",
+    subtitle = md("*Top 50 Albums based on latest release in 2020*")
+  ) |>
+  tab_source_note("Sourced from https://github.com/rfordatascience/tidytuesday") |>
+  tab_options(
+    data_row.padding = px(18),
+    table.font.size = px(16L),
+  ) |>
+  gt_theme_espn() |>
+  opt_table_outline(width = px(2), color = "#e95420") |>
   opt_css(
     css = "
     .gt_table {
       width: max-content !important;
+    }
+    .gt_heading {
+      font-family: 'Ubuntu' !important;
+      font-weight: 900 !important;
     }
     "
   )
