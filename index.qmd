@@ -1,6 +1,7 @@
 ---
 title: "Greatest Albums of All Time"
-title-block-banner: rstones.png
+title-block-banner: true
+description: "Rolling Stone Album Rankings – almost twenty years apart"
 author: Sukalpo Saha
 date: today
 ---
@@ -12,23 +13,23 @@ body {
 }
 
 .quarto-title-block .quarto-title-banner {
-  background-position: left !important;
-  padding-left: 0.5vw !important;
-  background-size: 18% !important;
-  background-repeat: no-repeat !important;
+  background-size: 15% !important;
   background-color: #fff2d780 !important;
   background-origin: content-box !important;
 }
 
 .quarto-title .title {
   color: #c61a09;
-  font-weight: 800;
   font-size: xxx-large;
+}
+
+#title-block-header.quarto-title-block.default .description {
+  color: #c61a09;
+  font-size: x-large;
 }
 
 .quarto-title-meta {
   color: #c61a09;
-  font-weight: 800;
   font-size: large;
 }
 ```
@@ -121,7 +122,20 @@ df_albums |>
     locations = cells_body(columns = is.numeric)
   ) |>
   tab_style(
-    style = cell_text(align = "center", weight = "bold", color = "#EEEEEE", font = "Ubuntu"),
+    style = cell_text(font = google_font("Chivo"), weight = "700"),
+    locations = cells_title()
+  ) |>
+  tab_style(
+    style = cell_text(font = google_font("Poppins")),
+    locations = cells_body()
+  ) |>
+  tab_style(
+    style = cell_text(
+      align = "center",
+      weight = "bold",
+      color = "#EEEEEE",
+      font = google_font("Proza Libre")
+    ),
     locations = cells_column_labels()
   ) |>
    tab_style(
@@ -227,7 +241,7 @@ df_albums |>
   ) |>
   sub_missing(
     columns = contains("Popularity"),
-    missing_text = "Not Featured"
+    missing_text = "Not on Spotify"
   ) |>
   ## specify column widths
   cols_width(
@@ -262,10 +276,6 @@ df_albums |>
     css = "
     .gt_table {
       width: max-content !important;
-    }
-    .gt_heading {
-      font-family: 'Ubuntu' !important;
-      font-weight: 900 !important;
     }
     "
   )
