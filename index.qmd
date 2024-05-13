@@ -12,6 +12,7 @@ body {
 }
 
 .quarto-title-block .quarto-title-banner {
+  background-position: left !important;
   background-size: 20% !important;
   background-repeat: no-repeat !important;
   background-color: #fff2d780 !important;
@@ -51,7 +52,7 @@ df_albums <- rolling_stone |>
   mutate(Genre = if_else(is.na(genre), "Other", genre)) |>
   filter(if_any(ends_with("2020"), \(x) x <= 50)) |>
   select(
-    "Name" = "album",
+    "Album" = "album",
     "Artist" = "clean_name",
     "Genre" = "Genre",
     "Release Year" = "release_year",
@@ -176,7 +177,7 @@ df_albums |>
     locations = cells_title()
   ) |>
   tab_style(
-    style = cell_borders(sides = "top", style = "hidden"),
+    style = cell_borders(sides = c("top", "right", "left"), style = "hidden"),
     locations = cells_title()
   ) |>
   data_color(
