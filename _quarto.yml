@@ -4,9 +4,10 @@ project:
 website:
   title: "Greatest Albums of All Time"
   navbar:
+    search: false
     left:
       - href: index.qmd
-        text: Rankings
+        text: Top 50
       - href: about.qmd
         text: About
 

@@ -13,9 +13,11 @@ body {
 
 .quarto-title-block .quarto-title-banner {
   background-position: left !important;
-  background-size: 20% !important;
+  padding-left: 0.5vw !important;
+  background-size: 18% !important;
   background-repeat: no-repeat !important;
   background-color: #fff2d780 !important;
+  background-origin: content-box !important;
 }
 
 .quarto-title .title {
@@ -46,8 +48,10 @@ library(gtExtras)
 ```{r data_prep}
 #| message: false
 #| echo: false
-rolling_stone <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-05-07/rolling_stone.csv')
 
+## reading data
+rolling_stone <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-05-07/rolling_stone.csv')
+## data preparation
 df_albums <- rolling_stone |>
   mutate(Genre = if_else(is.na(genre), "Other", genre)) |>
   filter(if_any(ends_with("2020"), \(x) x <= 50)) |>
@@ -75,6 +79,7 @@ df_albums <- rolling_stone |>
 #| echo: false
 df_albums |>
   gt() |>
+  ## add bar plot for `Weeks on Billboard`
   gt_plt_bar(
     column = "Weeks on Billboard",
     color = "#322C2B",
@@ -82,12 +87,14 @@ df_albums |>
     width = 60,
     scale_type = "number"
     ) |>
+  ## add image for rank difference
   gt_fa_rank_change(
     column = contains("Change"),
     font_color = "match",
     fa_type = "arrow",
     palette = c("green", "grey", "red")
   ) |>
+  # spanners
   tab_spanner(
     columns = 1:4,
     label = html(local_image(filename = "music-album.png", height = 50)),
@@ -108,6 +115,7 @@ df_albums |>
     label = html(local_image(filename = "spotify.png", height = 50)),
     id = "spotify"
   ) |>
+  ## table body styling
   tab_style(
     style = cell_text(align = "center"),
     locations = cells_body(columns = is.numeric)
@@ -180,6 +188,7 @@ df_albums |>
     style = cell_borders(sides = c("top", "right", "left"), style = "hidden"),
     locations = cells_title()
   ) |>
+  ## coloring values
   data_color(
     columns = "Genre",
     direction = "column",
@@ -200,6 +209,7 @@ df_albums |>
     method = "numeric",
     na_color = "white"
   ) |>
+  ## format spotify urls
   fmt_url(
     columns = 12,
     label = html(local_image(filename = "play.png")),
@@ -210,6 +220,7 @@ df_albums |>
     pattern = "{1} {2}",
     rows = Popularity > 0
   ) |>
+  ## substitute missing data
   sub_missing(
     columns = contains("Rank"),
     missing_text = "Outside Top 500"
@@ -218,12 +229,14 @@ df_albums |>
     columns = contains("Popularity"),
     missing_text = "Not Featured"
   ) |>
+  ## specify column widths
   cols_width(
     contains("Release") ~ px(80),
     contains("Popularity") ~ px(120),
     is.numeric ~ px(80),
     everything() ~ px(150)
   ) |>
+  ## relabel columns
   cols_label_with(
     columns = 5:7,
     fn = \(x) md(x)
@@ -232,11 +245,13 @@ df_albums |>
     columns = "Popularity",
     fn = \(x) md(paste0(x, "<br>Index"))
   ) |>
+  ## headers and source notes
   tab_header(
     title = "Album Rankings by Rolling Stone",
-    subtitle = md("*Top 50 Albums based on latest release in 2020 [(See Top 500)](https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/)*")
+    subtitle = md("*Top 50 Albums in ascending order based on the rankings released in 2020 [(See Top 500)](https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/)*")
   ) |>
   tab_source_note(md("Data sourced from [https://github.com/rfordatascience/tidytuesday/tree/master/data/2024/2024-05-07](https://github.com/rfordatascience/tidytuesday/tree/master/data/2024/2024-05-07)")) |>
+  ## theme
   tab_options(
     data_row.padding = px(18),
     table.font.size = px(16L),
