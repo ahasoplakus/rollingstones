@@ -42,21 +42,18 @@ library(gt)
 library(gtExtras)
 ```
 
-```{r}
+```{r data_prep}
 #| message: false
 #| echo: false
 rolling_stone <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-05-07/rolling_stone.csv')
-```
 
-```{r, results='asis'}
-#| echo: false
 df_albums <- rolling_stone |>
   mutate(Genre = if_else(is.na(genre), "Other", genre)) |>
   filter(if_any(ends_with("2020"), \(x) x <= 50)) |>
   select(
-    "Genre" = "Genre",
-    "Artist" = "clean_name",
     "Name" = "album",
+    "Artist" = "clean_name",
+    "Genre" = "Genre",
     "Release Year" = "release_year",
     contains("rank"),
     "Change (2003-2020)" = "differential",
@@ -71,7 +68,10 @@ df_albums <- rolling_stone |>
     .cols = contains("rank"),
     .fn = \(x) str_to_title(paste0(str_replace_all(x, "_", "<br>("), ")"))
   )
+```
 
+```{r rank_table, results='asis'}
+#| echo: false
 df_albums |>
   gt() |>
   gt_plt_bar(
@@ -86,14 +86,6 @@ df_albums |>
     font_color = "match",
     fa_type = "arrow",
     palette = c("green", "grey", "red")
-  ) |>
-  cols_label_with(
-    columns = 5:7,
-    fn = \(x) md(x)
-  ) |>
-  cols_label_with(
-    columns = "Popularity",
-    fn = \(x) md(paste0(x, "<br>Index"))
   ) |>
   tab_spanner(
     columns = 1:4,
@@ -156,7 +148,7 @@ df_albums |>
     locations = cells_row_groups()
   ) |>
   tab_style(
-    style = cell_text(color = "#1DB954", weight = "bold"),
+    style = cell_text(color = "#1ed760", weight = "bold"),
     locations = cells_body(columns = 11)
   ) |>
   tab_style(
@@ -207,6 +199,16 @@ df_albums |>
     method = "numeric",
     na_color = "white"
   ) |>
+  fmt_url(
+    columns = 12,
+    label = html(local_image(filename = "play.png")),
+    show_underline = FALSE
+  ) |>
+  cols_merge(
+    columns = c(11, 12),
+    pattern = "{1} {2}",
+    rows = Popularity > 0
+  ) |>
   sub_missing(
     columns = contains("Rank"),
     missing_text = "Outside Top 500"
@@ -215,17 +217,25 @@ df_albums |>
     columns = contains("Popularity"),
     missing_text = "Not Featured"
   ) |>
-  fmt_url(columns = 12, as_button = TRUE, color = "#1DB954", button_fill = "#000000") |>
   cols_width(
     contains("Release") ~ px(80),
+    contains("Popularity") ~ px(120),
     is.numeric ~ px(80),
     everything() ~ px(150)
   ) |>
-  tab_header(
-    title = "Album Rankings",
-    subtitle = md("*Top 50 Albums based on latest release in 2020*")
+  cols_label_with(
+    columns = 5:7,
+    fn = \(x) md(x)
   ) |>
-  tab_source_note("Sourced from https://github.com/rfordatascience/tidytuesday") |>
+  cols_label_with(
+    columns = "Popularity",
+    fn = \(x) md(paste0(x, "<br>Index"))
+  ) |>
+  tab_header(
+    title = "Album Rankings by Rolling Stone",
+    subtitle = md("*Top 50 Albums based on latest release in 2020 [(See Top 500)](https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/)*")
+  ) |>
+  tab_source_note(md("Data sourced from [https://github.com/rfordatascience/tidytuesday/tree/master/data/2024/2024-05-07](https://github.com/rfordatascience/tidytuesday/tree/master/data/2024/2024-05-07)")) |>
   tab_options(
     data_row.padding = px(18),
     table.font.size = px(16L),
