@@ -1,7 +1,7 @@
 ---
-title: "Greatest Albums of All Time"
+title: "Rolling Stone Album Rankings"
 title-block-banner: true
-description: "Rolling Stone Album Rankings – almost twenty years apart"
+description: "The 'New' greatest albums of all time in comparison with the ones appearing in the Top 500 list released in 2003"
 author: Sukalpo Saha
 date: today
 ---
@@ -9,13 +9,17 @@ date: today
 ```{css}
 #| echo: false
 body {
-  background-color: #fff2d780 !important;
+  background-color: #fff2d780;
+  display: flex;
+  width: min-content;
+}
+
+#title-block-header {
+    height: 25vh !important;
 }
 
 .quarto-title-block .quarto-title-banner {
-  background-size: 15% !important;
   background-color: #fff2d780 !important;
-  background-origin: content-box !important;
 }
 
 .quarto-title .title {
@@ -23,14 +27,18 @@ body {
   font-size: xxx-large;
 }
 
-#title-block-header.quarto-title-block.default .description {
-  color: #c61a09;
+.quarto-title-block.default .description {
+  color: #2C4E80;
   font-size: x-large;
 }
 
-.quarto-title-meta {
+.quarto-title-meta-heading {
   color: #c61a09;
-  font-size: large;
+}
+
+#title-block-header.quarto-title-block.default .quarto-title-meta-contents {
+    font-size: larger;
+    color: #2c4e80;
 }
 ```
 
@@ -54,8 +62,11 @@ library(gtExtras)
 rolling_stone <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-05-07/rolling_stone.csv')
 ## data preparation
 df_albums <- rolling_stone |>
-  mutate(Genre = if_else(is.na(genre), "Other", genre)) |>
   filter(if_any(ends_with("2020"), \(x) x <= 50)) |>
+  mutate(
+    Genre = if_else(is.na(genre), "Other", genre),
+    URL = paste0("https://open.spotify.com/album/", album_id)
+  ) |>
   select(
     "Album" = "album",
     "Artist" = "clean_name",
@@ -66,9 +77,8 @@ df_albums <- rolling_stone |>
     "Peak Position" = "peak_billboard_position",
     "Weeks on Billboard" = "weeks_on_billboard",
     "Popularity" = "spotify_popularity",
-    "URL" = "album_id",
+    "URL"
   ) |>
-  mutate(URL = paste0("https://open.spotify.com/album/", URL)) |>
   arrange(across(ends_with("2020"))) |>
   rename_with(
     .cols = contains("rank"),
@@ -92,7 +102,7 @@ df_albums |>
   gt_fa_rank_change(
     column = contains("Change"),
     font_color = "match",
-    fa_type = "arrow",
+    fa_type = "angles",
     palette = c("green", "grey", "red")
   ) |>
   # spanners
@@ -159,7 +169,7 @@ df_albums |>
     locations = cells_title()
   ) |>
   tab_style(
-    style = cell_text(color = "#c61a09"),
+    style = cell_text(color = "#2c4e80"),
     locations = cells_source_notes()
   ) |>
   tab_style(
@@ -171,7 +181,7 @@ df_albums |>
     locations = cells_row_groups()
   ) |>
   tab_style(
-    style = cell_text(color = "#1ed760", weight = "bold"),
+    style = cell_text(color = "#1ed760", weight = "500"),
     locations = cells_body(columns = 11)
   ) |>
   tab_style(
@@ -247,6 +257,7 @@ df_albums |>
   cols_width(
     contains("Release") ~ px(80),
     contains("Popularity") ~ px(120),
+    contains("Change") ~ px(80),
     is.numeric ~ px(80),
     everything() ~ px(150)
   ) |>
@@ -276,6 +287,14 @@ df_albums |>
     css = "
     .gt_table {
       width: max-content !important;
+    }
+    .gt_subtitle {
+      color: #2c4e80 !important;
+    }
+    table > tbody > tr > td > div > div {
+     font-size: 16px !important;
+     font-weight: 500 !important;
+     display: contents !important;
     }
     "
   )

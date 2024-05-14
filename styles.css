@@ -3,3 +3,13 @@
     overflow-x: auto;
     width: max-content;
 }
+
+.navbar #quarto-search.type-overlay .aa-Autocomplete svg.aa-SubmitIcon {
+    display: none !important;
+}
+
+
+.nav-footer, .nav-footer a {
+   background-color: #fff2d700;
+   color: #2c4e80;
+}

@@ -3,19 +3,26 @@ project:
 
 website:
   title: "Greatest Albums of All Time"
+  back-to-top-navigation: true
+  repo-url: https://github.com/ahasoplakus/rollingstones/
+  repo-branch: master
+  repo-actions: [source]
+
   navbar:
-    search: false
     left:
       - href: index.qmd
         text: Top 50
       - href: about.qmd
-        text: About
+        text: Author
+        icon: user
 
 format:
   html:
     theme: united
+    smooth-scroll: true
     css: styles.css
     toc: true
+    page-layout: full
 
 editor: visual
 
