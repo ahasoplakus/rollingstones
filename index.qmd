@@ -181,7 +181,7 @@ df_albums |>
     locations = cells_row_groups()
   ) |>
   tab_style(
-    style = cell_text(color = "#1ed760", weight = "500"),
+    style = cell_text(color = "#fff"),
     locations = cells_body(columns = 11)
   ) |>
   tab_style(
@@ -236,7 +236,7 @@ df_albums |>
   ## format spotify urls
   fmt_url(
     columns = 12,
-    label = html(local_image(filename = "play.png")),
+    label = with_tooltip(html(local_image(filename = "play.png", height = 22)), "Play"),
     show_underline = FALSE
   ) |>
   cols_merge(
@@ -291,7 +291,10 @@ df_albums |>
     .gt_subtitle {
       color: #2c4e80 !important;
     }
-    table > tbody > tr > td > div > div {
+    abbr[title], abbr[data-bs-original-title] {
+      cursor: pointer;
+    }
+    tbody > tr > td > div > div {
      font-size: 16px !important;
      font-weight: 500 !important;
      display: contents !important;
