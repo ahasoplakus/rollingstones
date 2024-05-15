@@ -40,6 +40,10 @@ body {
     font-size: larger;
     color: #2c4e80;
 }
+
+#quarto-back-to-top {
+   bottom: -5vh !important;
+}
 ```
 
 ```{r}
@@ -108,22 +112,22 @@ df_albums |>
   # spanners
   tab_spanner(
     columns = 1:4,
-    label = html(local_image(filename = "music-album.png", height = 50)),
+    label = with_tooltip(html(local_image(filename = "music-album.png", height = 50)), "Album Details"),
     id = "album"
   ) |>
   tab_spanner(
     columns = 5:8,
-    label = html(local_image(filename = "rstones.png", height = 50)),
+    label = with_tooltip(html(local_image(filename = "rstones.png", height = 50)), "Rolling Stone Rankings"),
     id = "rstones"
   ) |>
   tab_spanner(
     columns = 9:10,
-    label = html(local_image(filename = "billboard.png", height = 50)),
+    label = with_tooltip(html(local_image(filename = "billboard.png", height = 50)), "Billboard Statistics"),
     id = "billboard"
   ) |>
   tab_spanner(
     columns = 11:12,
-    label = html(local_image(filename = "spotify.png", height = 50)),
+    label = with_tooltip(html(local_image(filename = "spotify.png", height = 50)), "Spotify"),
     id = "spotify"
   ) |>
   ## table body styling
@@ -165,8 +169,16 @@ df_albums |>
     locations = cells_source_notes()
   ) |>
   tab_style(
+    style = cell_fill(color = "#fff2d780"),
+    locations = cells_footnotes()
+  ) |>
+  tab_style(
     style = cell_text(color = "#c61a09"),
     locations = cells_title()
+  ) |>
+  tab_style(
+    style = cell_text(color = "#2c4e80"),
+    locations = cells_footnotes()
   ) |>
   tab_style(
     style = cell_text(color = "#2c4e80"),
@@ -275,11 +287,16 @@ df_albums |>
     title = "Album Rankings by Rolling Stone",
     subtitle = md("*Top 50 Albums in ascending order based on the rankings released in 2020 [(See Top 500)](https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/)*")
   ) |>
+  tab_footnote(
+    "Album details in first four columns are colored by Genre",
+    locations = cells_column_spanners(spanners = "album")
+  ) |>
   tab_source_note(md("Data sourced from [https://github.com/rfordatascience/tidytuesday/tree/master/data/2024/2024-05-07](https://github.com/rfordatascience/tidytuesday/tree/master/data/2024/2024-05-07)")) |>
   ## theme
   tab_options(
     data_row.padding = px(18),
     table.font.size = px(16L),
+    footnotes.marks = "numbers"
   ) |>
   gt_theme_espn() |>
   opt_table_outline(width = px(2), color = "#e95420") |>
