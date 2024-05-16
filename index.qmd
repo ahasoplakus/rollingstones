@@ -311,6 +311,12 @@ df_albums |>
     abbr[title], abbr[data-bs-original-title] {
       cursor: pointer;
     }
+    .gt_footnote_marks {
+    font-size: 100% !important;
+    font-weight: bold !important;
+    color: #2c4e80 !important;
+    vertical-align: 0.25em !important;
+    }
     tbody > tr > td > div > div {
      font-size: 16px !important;
      font-weight: 500 !important;
