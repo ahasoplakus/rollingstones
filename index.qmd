@@ -3,19 +3,18 @@ title: "Rolling Stone Album Rankings"
 title-block-banner: true
 description: "The 'New' greatest albums of all time in comparison with the ones appearing in the Top 500 list released in 2003"
 author: Sukalpo Saha
-date: today
+date: 05/15/2024
 ---
 
 ```{css}
 #| echo: false
 body {
   background-color: #fff2d780;
-  display: flex;
-  width: min-content;
 }
 
-#title-block-header {
-    height: 25vh !important;
+#quarto-content>* {
+    padding-top: 25px;
+    width: max-content;
 }
 
 .quarto-title-block .quarto-title-banner {
